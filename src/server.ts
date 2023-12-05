@@ -1,11 +1,12 @@
 import http from "node:http";
-import { Request } from "./config/http";
+import { Request, Response } from "./config/http";
 import { json } from "./middlewares/json";
 import { routes } from "./routes";
 import { extractQueryParams } from "./utils/extract-query-params";
 
 const server = http.createServer({
   IncomingMessage: Request,
+  ServerResponse: Response as any,
 });
 
 server.on("request", async (req, res) => {
