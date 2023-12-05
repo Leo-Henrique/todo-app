@@ -1,0 +1,35 @@
+@baseUrl = http://localhost:3333
+
+POST {{baseUrl}}/tasks
+Content-Type: application/json
+
+{
+  "title": "Task title example",
+  "description": "Task description example"
+}
+
+###
+
+GET {{baseUrl}}/tasks
+
+###
+
+GET {{baseUrl}}/tasks?search=text
+
+###
+
+PUT {{baseUrl}}/tasks/966c99ce-b810-45c2-aa6a-b602a4d09253
+Content-Type: application/json
+
+{
+  "title": "Task title example updated",
+  "description": "Task description example updated"
+}
+
+###
+
+PATCH {{baseUrl}}/tasks/966c99ce-b810-45c2-aa6a-b602a4d09253/complete
+
+###
+
+DELETE {{baseUrl}}/tasks/966c99ce-b810-45c2-aa6a-b602a4d09253
