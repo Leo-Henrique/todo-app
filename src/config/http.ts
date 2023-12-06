@@ -2,13 +2,13 @@ import http from "node:http";
 import { Socket } from "node:net";
 
 export class Request extends http.IncomingMessage {
-  body: null | any;
+  body: any;
   query: any;
   params: any;
 
   constructor(socket: Socket) {
     super(socket);
-    this.body = null;
+    this.body = {};
     this.query = {};
     this.params = {};
   }
