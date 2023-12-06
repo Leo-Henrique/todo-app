@@ -3,6 +3,7 @@ import { Request, Response } from "./config/http";
 import { json } from "./middlewares/json";
 import { routes } from "./routes";
 import { extractQueryParams } from "./utils/extract-query-params";
+import { validate } from "./utils/validate";
 
 const server = http.createServer({
   IncomingMessage: Request,
@@ -26,6 +27,12 @@ server.on("request", async (req, res) => {
 
     req.query = queryParams ? extractQueryParams(queryParams) : {};
     req.params = routeParams;
+
+    if (route.validation) {
+      const isValid = validate(route.validation, req.body, res);
+
+      if (!isValid) return;
+    }
 
     return route.handler(req, res);
   }

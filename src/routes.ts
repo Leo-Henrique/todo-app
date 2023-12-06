@@ -3,10 +3,12 @@ import { Request, Response } from "./config/http";
 import { Database } from "./database";
 import { Task } from "./models/task";
 import { buildRoutePath } from "./utils/build-route-path";
+import { Schema } from "./utils/validate";
 
 interface Route {
   method: string;
   path: RegExp;
+  validation?: Schema;
   handler: (req: Request, res: Response) => void;
 }
 
@@ -16,9 +18,11 @@ export const routes: Route[] = [
   {
     method: "POST",
     path: buildRoutePath("/tasks"),
+    validation: {
+      title: ["string", "required"],
+      description: ["string", "required"],
+    },
     handler: (req, res) => {
-      if (!req.body) return res.badRequest("No data provided");
-
       const insertedTask = database.insert<Task>("tasks", {
         ...req.body,
         completed_at: null,
@@ -43,13 +47,18 @@ export const routes: Route[] = [
   {
     method: "PUT",
     path: buildRoutePath("/tasks/:id"),
+    validation: {
+      title: ["string"],
+      description: ["string"],
+    },
     handler: (req, res) => {
+      if (!Object.keys(req.body).length)
+        return res.badRequest("No data provided to update the task");
+
       const { id } = req.params;
       const task = database.select<Task>("tasks", id);
 
       if (!task) return res.badRequest("Task not found");
-
-      if (!req.body) return res.badRequest("No data provided");
 
       database.update<Task>("tasks", id, req.body);
 
