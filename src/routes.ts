@@ -106,16 +106,20 @@ export const routes: Route[] = [
 
       bb.on("file", async (name, file) => {
         if (name === "csv") {
-          const parser = file.pipe(parse({ delimiter: ";", columns: true }));
+          const parser = file.pipe(parse({ delimiter: ";", fromLine: 2 }));
           const sendDate = new Date().getTime();
-          let i = 0;
 
-          for await (const task of parser) {
-            i++;
-            database.insert<Task>("tasks", { ...task, completed_at: null });
+          for await (const row of parser) {
+            const [title, description] = row;
+            const task = database.insert<Task>("tasks", {
+              title,
+              description,
+              completed_at: null,
+            });
+
             tasks.push(task);
             console.log(
-              `Inserted task: ${i} |`,
+              `Title of the task inserted: ${title} |`,
               `Time: ${new Date().getTime() - sendDate}ms`
             );
           }
