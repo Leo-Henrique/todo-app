@@ -8,8 +8,13 @@
     "dev": "tsx watch src/server.ts"
   },
   "devDependencies": {
+    "@types/busboy": "^1.5.3",
     "@types/node": "^20.10.3",
     "tsx": "^4.6.2",
     "typescript": "^5.3.2"
+  },
+  "dependencies": {
+    "busboy": "^1.6.0",
+    "csv-parse": "^5.5.2"
   }
 }

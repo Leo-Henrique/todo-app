@@ -1,5 +1,7 @@
 import { Request, Response } from "./config/http";
 
+import busboy from "busboy";
+import { parse } from "csv-parse";
 import { Database } from "./database";
 import { Task } from "./models/task";
 import { buildRoutePath } from "./utils/build-route-path";
@@ -93,6 +95,35 @@ export const routes: Route[] = [
       database.delete<Task>("tasks", id);
 
       res.ok(null, 204);
+    },
+  },
+  {
+    method: "POST",
+    path: buildRoutePath("/tasks/upload"),
+    handler: async (req, res) => {
+      const bb = busboy({ headers: req.headers });
+      const tasks: Task[] = [];
+
+      bb.on("file", async (name, file) => {
+        if (name === "csv") {
+          const parser = file.pipe(parse({ delimiter: ";", columns: true }));
+          const sendDate = new Date().getTime();
+          let i = 0;
+
+          for await (const task of parser) {
+            i++;
+            database.insert<Task>("tasks", { ...task, completed_at: null });
+            tasks.push(task);
+            console.log(
+              `Inserted task: ${i} |`,
+              `Time: ${new Date().getTime() - sendDate}ms`
+            );
+          }
+        }
+      });
+
+      req.pipe(bb);
+      res.ok(tasks, 201);
     },
   },
 ];

@@ -15,7 +15,8 @@ server.on("request", async (req, res) => {
 
   if (!method || !url) return res.writeHead(404).end();
 
-  await json(req, res);
+  if (!req.headers["content-type"]?.includes("multipart/form-data"))
+    await json(req, res);
 
   const route = routes.find(route => {
     return route.method === method && route.path.test(url);
